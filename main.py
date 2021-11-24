@@ -1,5 +1,5 @@
 import detect_text
-import os
+import os, json
 
 for root, dirs, files in os.walk("data/"):
     for file in files:

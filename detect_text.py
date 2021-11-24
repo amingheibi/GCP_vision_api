@@ -1,8 +1,10 @@
 from google.cloud import vision
+from google.cloud.vision_v1.types.image_annotator import AnnotateImageResponse
+import json
 
 
-def detect_text(path):
-    file_path = str(path)
+def detect_text(file_path):
+    print("Sending request for {}".format(file_path))
     client = vision.ImageAnnotatorClient()
 
     with open(file_path, "rb") as image:
@@ -12,17 +14,14 @@ def detect_text(path):
 
     response = client.text_detection(image=base64_image)
     texts = response.text_annotations
-    print("Texts:")
+    list_of_texts = []
 
     for text in texts:
-        print('\n"{}"'.format(text.description))
-
-        vertices = [
-            "({},{})".format(vertex.x, vertex.y)
-            for vertex in text.bounding_poly.vertices
-        ]
-
-        print("bounds: {}".format(",".join(vertices)))
+        vertices = [(vertex.x, vertex.y) for vertex in text.bounding_poly.vertices]
+        list_of_texts.append((text.description, vertices))
 
     if response.error.message:
         print(response.error.message)
+    else:
+        with open("{}.json".format(file_path), "w") as response_file:
+            json.dump(list_of_texts, response_file)
