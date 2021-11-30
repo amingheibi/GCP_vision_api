@@ -12,7 +12,11 @@ def detect_text(file_path):
 
     base64_image = vision.Image(content=binary_image)
 
-    response = client.text_detection(image=base64_image)
+    response = client.text_detection(
+        image=base64_image,
+        image_context={"language_hints": ["fa", "en"]},
+        features={"model": "builtin/latest"},
+    )
     texts = response.text_annotations
     list_of_texts = []
 
